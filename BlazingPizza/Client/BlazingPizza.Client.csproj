@@ -16,8 +16,17 @@
     <ProjectReference Include="..\Shared\BlazingPizza.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="images\pizzas\" />
-    <Folder Include="wwwroot\images\" />
+    <Folder Include="wwwroot\images\pizzas\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="wwwroot\images\pizzas\bacon.jpg" />
+    <None Include="wwwroot\images\pizzas\cheese.jpg" />
+    <None Include="wwwroot\images\pizzas\hawaiian.jpg" />
+    <None Include="wwwroot\images\pizzas\margherita.jpg" />
+    <None Include="wwwroot\images\pizzas\meaty.jpg" />
+    <None Include="wwwroot\images\pizzas\mushroom.jpg" />
+    <None Include="wwwroot\images\pizzas\pepperoni.jpg" />
+    <None Include="wwwroot\images\pizzas\salad.jpg" />
   </ItemGroup>
 
 </Project>
