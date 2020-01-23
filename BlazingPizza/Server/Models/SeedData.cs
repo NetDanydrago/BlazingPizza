@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using BlazingPizza.Shared;
 namespace BlazingPizza.Server.Models
 {
-    //Leer Que es una Clase Estatica.
+    //Leer Que es una Clase Estatica .
     public static class SeedData
     {
         public static void Initialize(PizzaStoreContext context)
