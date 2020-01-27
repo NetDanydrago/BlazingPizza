@@ -7,7 +7,7 @@
          {
              foreach(var Special in Specials)
              {
-                 <li style="background-image:url('@Special.ImageUrl')">
+                 <li @onclick="@(() => ShowConfigurePizzaDialog(Special))" style="background-image:url('@Special.ImageUrl')">
                      <div class="pizza-info">
                          <span class="title">@Special.Name</span>
                          @Special.Description
@@ -21,11 +21,28 @@
     </ul>
 </div>
 
-
+@if(ShowConfigureDialog)
+{
+    <ConfigurePizzaDialog Pizza="ConfiguringPizza" />
+}
 
 @code{
 
+    Pizza ConfiguringPizza;
+    bool ShowConfigureDialog;
     List<PizzaSpecial> Specials;
+
+    void ShowConfigurePizzaDialog(PizzaSpecial special)
+    {
+        ConfiguringPizza = new Pizza()
+        {
+            Special = special,
+            SpecialId = special.Id,
+            Size = Pizza.DefaultSize,
+            Toppings = new List<PizzaTopping>()
+        };
+        ShowConfigureDialog = true;
+    }
 
     //Recuperamos la lista de pizzas mediante la peticion http hacia la api y asemos uso del Metodo GetJSon para manejar la deserealizacion de la respuesta Json
     protected async override Task OnInitializedAsync()
