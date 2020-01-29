@@ -23,15 +23,19 @@
 
 @if(ShowConfigureDialog)
 {
-    <ConfigurePizzaDialog Pizza="ConfiguringPizza" />
+    <ConfigurePizzaDialog Pizza="ConfiguringPizza" OnCancel="CancelConfigurePizzaDialog" OnConfirm="ConfirmConfigurePizzaDialog" />
 }
 
 @code{
 
+    #region Properties
     Pizza ConfiguringPizza;
     bool ShowConfigureDialog;
+    Order Order = new Order();
     List<PizzaSpecial> Specials;
+    #endregion
 
+    #region Methods 
     void ShowConfigurePizzaDialog(PizzaSpecial special)
     {
         ConfiguringPizza = new Pizza()
@@ -49,5 +53,26 @@
     {
         Specials = await HttpClient.GetJsonAsync<List<PizzaSpecial>>("specials");
     }
+
+    #endregion
+
+    #region Events
+
+    void CancelConfigurePizzaDialog()
+    {
+        ConfiguringPizza = null;
+        ShowConfigureDialog = false;
+    }
+
+    void ConfirmConfigurePizzaDialog()
+    {
+        Order.Pizzas.Add(ConfiguringPizza);
+        ConfiguringPizza = null;
+
+        ShowConfigureDialog = false;
+    }
+
+    #endregion
+
 
 }

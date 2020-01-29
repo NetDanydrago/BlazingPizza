@@ -12,6 +12,7 @@ namespace BlazingPizza.Server.Models
         public DbSet<PizzaSpecial> Specials { get; set; }
         public DbSet<Topping> Toppings { get; set; }
         public DbSet<Pizza> Pizzas { get; set; }
+        public DbSet<Order> Orders { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -30,6 +31,10 @@ namespace BlazingPizza.Server.Models
             // Un Topping Puede Estar en Muchas Pizzas.
             modelBuilder.Entity<PizzaTopping>()
                 .HasOne(pst => pst.Topping).WithMany();
+            // Definir LatLong como un Owned Entity Type de Order.
+            // Con esto las propiedades de la entidad LatLong se crearán en la tabla Order
+            // en lugar de crear una nueva tabla y una llave foránea para relacionarlas.
+            modelBuilder.Entity<Order>().OwnsOne(o => o.DeliveryLocation);
         }
     }
 }

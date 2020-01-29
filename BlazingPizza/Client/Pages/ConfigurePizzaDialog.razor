@@ -1,10 +1,23 @@
 ﻿@inject HttpClient HttpClient
 
 @code {
+
+    #region Properties
     [Parameter]
     public Pizza Pizza { get; set; }
 
     List<Topping> Toppings;
+    #endregion
+
+    #region Events 
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    [Parameter]
+    public EventCallback OnConfirm { get; set; }
+    #endregion
+
+    #region Methods
 
     protected async override Task OnInitializedAsync()
     {
@@ -31,14 +44,14 @@
             AddTopping(Toppings[index]);
         }
     }
-
+    #endregion
 
 }
 
 <div class="dialog-container">
     <div class="dialog">
         <div class="dialog-title">
-            <h2>Pizza.Special.Name</h2>
+            <h2>@Pizza.Special.Name</h2>
             @Pizza.Special.Description
         </div>
         <form class="dialog-body">
@@ -96,14 +109,14 @@
             </div>
         </form>
         <div class="dialog-buttons">
-            <button class="btn btn-secondary mr-auto">Cancelar</button>
+            <button class="btn btn-secondary mr-auto" @onclick="OnCancel">Cancelar</button>
         <span class="mr-center">
             precio:
             <span class="price">
                 @(Pizza.GetFormattedTotalPrice())
             </span>
         </span>
-            <button class="btn btn-success ml-auto">Ordenar ></button>
+            <button class="btn btn-success ml-auto" @onclick="OnConfirm" >Ordenar ></button>
         </div>
     </div>
 </div>
