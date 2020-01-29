@@ -25,7 +25,7 @@ namespace BlazingPizza.Shared
         }
         public string GetFormattedTotalPrice()
         {
-            return GetTotalPrice().ToString();
+            return GetTotalPrice().ToString("0.00");
         }
     }
 }
