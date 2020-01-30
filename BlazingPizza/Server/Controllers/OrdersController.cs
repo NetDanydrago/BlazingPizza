@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazingPizza.Server.Controllers
 {
@@ -18,6 +19,18 @@ namespace BlazingPizza.Server.Controllers
         public OrdersController(PizzaStoreContext context)
         {
             this.Context = context;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<OrderWithStatus>>> GetOrders()
+        {
+            var orders = await Context.Orders.Include(o => o.DeliveryLocation)
+                .Include(o => o.Pizzas).ThenInclude(p => p.Special)
+                .Include(o => o.Pizzas).ThenInclude(p => p.Toppings)
+                .ThenInclude(t => t.Topping)
+                .OrderByDescending(o => o.CreatedTime)
+                .ToListAsync();
+            return orders.Select(o => OrderWithStatus.FromOrder(o)).ToList();
         }
 
         [HttpPost]
