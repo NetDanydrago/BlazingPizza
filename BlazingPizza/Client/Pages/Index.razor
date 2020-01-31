@@ -1,5 +1,6 @@
 ﻿@page "/"
 @inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
 
 <div class="main">
     <ul class="pizza-cards">
@@ -106,8 +107,10 @@
 
     async Task PlaceOrder()
     {
-        await HttpClient.PostJsonAsync("orders", Order);
+
+        var NewOrderId  = await HttpClient.PostJsonAsync<int>("orders", Order);
         Order = new Order();
+        NavigationManager.NavigateTo($"myorders/{NewOrderId}");
     }
 
     #endregion
