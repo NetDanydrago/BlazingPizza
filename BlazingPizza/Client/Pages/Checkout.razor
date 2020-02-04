@@ -1,0 +1,39 @@
+﻿@page "/checkout"
+@using BlazingPizza.Client.Services
+@inject OrderState OrderState
+@inject NavigationManager NavigationManager
+@inject HttpClient HttpClient
+
+<div class="main">
+    <EditForm Model="OrderState.Order.DeliveryAddress" OnValidSubmit="PlaceOrder">
+        <div class="checkout-cols">
+            <div class="checkout-order-details">
+                <h4>Revisar la Orden</h4>
+                <OrderReview Order="OrderState.Order" />
+            </div>
+            <div>
+                <h4>Enviar a ..</h4>
+                <AddressEditor Address="@OrderState.Order.DeliveryAddress" />
+            </div>
+        </div>
+        <button type="submit" class="checkout-button btn btn-warning">
+            Aceptar la Orden
+        </button>
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+    </EditForm>
+</div>
+
+@code {
+    #region Manage Events
+    async Task PlaceOrder()
+    {
+
+        var NewOrderId  = await HttpClient.PostJsonAsync<int>("orders", OrderState.Order);
+        OrderState.ResetOrder();
+        NavigationManager.NavigateTo($"myorders/{NewOrderId}");
+    }
+
+    #endregion
+}
+
