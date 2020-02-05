@@ -16,22 +16,27 @@
                 <AddressEditor Address="@OrderState.Order.DeliveryAddress" />
             </div>
         </div>
-        <button type="submit" class="checkout-button btn btn-warning">
+        <button type="submit"   class="checkout-button btn btn-warning" disabled="@(isSubmitting)" >
             Aceptar la Orden
         </button>
         <DataAnnotationsValidator />
-        <ValidationSummary />
     </EditForm>
 </div>
 
 @code {
     #region Manage Events
+    bool isSubmitting { get; set; }
+
     async Task PlaceOrder()
     {
-
+        isSubmitting = true;
         var NewOrderId  = await HttpClient.PostJsonAsync<int>("orders", OrderState.Order);
-        OrderState.ResetOrder();
-        NavigationManager.NavigateTo($"myorders/{NewOrderId}");
+        if (NewOrderId != 0)
+        {
+            OrderState.ResetOrder();
+            NavigationManager.NavigateTo($"myorders/{NewOrderId}");             
+        }          
+        isSubmitting = false;
     }
 
     #endregion
