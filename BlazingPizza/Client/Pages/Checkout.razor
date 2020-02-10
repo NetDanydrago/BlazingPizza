@@ -3,42 +3,86 @@
 @inject OrderState OrderState
 @inject NavigationManager NavigationManager
 @inject HttpClient HttpClient
+@inject IJSRuntime JSRuntime
 
 <div class="main">
-    <EditForm Model="OrderState.Order.DeliveryAddress" OnValidSubmit="PlaceOrder">
-        <div class="checkout-cols">
-            <div class="checkout-order-details">
-                <h4>Revisar la Orden</h4>
-                <OrderReview Order="OrderState.Order" />
-            </div>
-            <div>
-                <h4>Enviar a ..</h4>
-                <AddressEditor Address="@OrderState.Order.DeliveryAddress" />
-            </div>
-        </div>
-        <button type="submit"   class="checkout-button btn btn-warning" disabled="@(isSubmitting)" >
-            Aceptar la Orden
-        </button>
-        <DataAnnotationsValidator />
-    </EditForm>
+    <AuthorizeView Context="AuthContext">
+        <NotAuthorized>
+            <h2>Rdirigiendote...</h2>
+        </NotAuthorized>
+        <Authorized>
+            <EditForm Model="OrderState.Order.DeliveryAddress" OnValidSubmit="PlaceOrder">
+                <div class="checkout-cols">
+                    <div class="checkout-order-details">
+                        <h4>Revisar la Orden</h4>
+                        <OrderReview Order="OrderState.Order" />
+                    </div>
+                    <div>
+                        <h4>Enviar a ..</h4>
+                        <AddressEditor Address="@OrderState.Order.DeliveryAddress" />
+                    </div>
+                </div>
+                <button type="submit" class="checkout-button btn btn-warning" disabled="@(isSubmitting)">
+                    Aceptar la Orden
+                </button>
+                <DataAnnotationsValidator />
+            </EditForm>
+        </Authorized>
+    </AuthorizeView>
 </div>
 
 @code {
+    [CascadingParameter]
+    Task<AuthenticationState> AuthenticationStateTask { get; set; }
+
     #region Manage Events
     bool isSubmitting { get; set; }
 
     async Task PlaceOrder()
     {
         isSubmitting = true;
-        var NewOrderId  = await HttpClient.PostJsonAsync<int>("orders", OrderState.Order);
+        var NewOrderId = await HttpClient.PostJsonAsync<int>("orders", OrderState.Order);
         if (NewOrderId != 0)
         {
             OrderState.ResetOrder();
-            NavigationManager.NavigateTo($"myorders/{NewOrderId}");             
-        }          
+            NavigationManager.NavigateTo($"myorders/{NewOrderId}");
+        }
         isSubmitting = false;
     }
 
+    #endregion
+
+    #region Initialize
+    protected override async Task OnInitializedAsync()
+    {
+
+
+        var AuthState = await AuthenticationStateTask;
+        if (!AuthState.User.Identity.IsAuthenticated)
+        {
+            await LocalStorage.SetAsync(
+                JSRuntime, "currentorder", OrderState.Order);
+
+            NavigationManager.NavigateTo(
+                "user/signin?redirectUri=/checkout", true);
+        }
+
+        if(!OrderState.Order.Pizzas.Any())
+        {
+            var SavedOrder =
+                await LocalStorage.GetAsync<Order>(JSRuntime, "currentorder");
+            if(SavedOrder != null)
+            {
+                OrderState.ReplaceOrder(SavedOrder);
+                await LocalStorage.DeleteAsync(JSRuntime, "currentorder");
+            }
+            else
+            {
+                NavigationManager.NavigateTo("");
+            }
+        }
+
+    }
     #endregion
 }
 
