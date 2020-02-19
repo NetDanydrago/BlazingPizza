@@ -37,20 +37,20 @@ namespace BlazingPizza.Server.Controllers
         /// <summary>
         /// Realizar Proceso de Aunteticacion del Usuario
         /// </summary>
-        /// <param name="reditectUri"></param>
+        /// <param name="redirectUri"></param>
         /// <returns></returns>
         [HttpGet("user/signin")]
-        public async Task SignIn(string reditectUri)
+        public async Task SignIn(string redirectUri)
         {
-            if (string.IsNullOrEmpty(reditectUri) ||
-                !Url.IsLocalUrl(reditectUri))
+            if (string.IsNullOrEmpty(redirectUri) ||
+                !Url.IsLocalUrl(redirectUri))
             {
-                reditectUri = "/";
+                redirectUri = "/";
             }
             await HttpContext.ChallengeAsync(
                 TwitterDefaults.AuthenticationScheme,
                 new AuthenticationProperties
-                { RedirectUri = reditectUri });
+                { RedirectUri = redirectUri });
         }
 
         /// <summary>

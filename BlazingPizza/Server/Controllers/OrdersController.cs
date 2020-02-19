@@ -23,10 +23,17 @@ namespace BlazingPizza.Server.Controllers
             this.Context = context;
         }
 
+        private string GetUserId()
+        {
+            return HttpContext.User.FindFirst(
+          "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name")?.Value;
+        }
+
         [HttpGet("{orderId}")]
         public async Task<ActionResult<OrderWithStatus>> GetOrderWithStatus( int orderId)
         {
             var order = await Context.Orders
+                .Where(o=> o.UserId == GetUserId())
                 .Where(o => o.OrderId == orderId)
                  .Include(o => o.DeliveryLocation)
                  .Include(o => o.Pizzas).ThenInclude(p => p.Special)
@@ -43,7 +50,9 @@ namespace BlazingPizza.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<List<OrderWithStatus>>> GetOrders()
         {
-            var orders = await Context.Orders.Include(o => o.DeliveryLocation)
+            var orders = await Context.Orders
+                .Where(o => o.UserId == GetUserId())
+                .Include(o => o.DeliveryLocation)
                 .Include(o => o.Pizzas).ThenInclude(p => p.Special)
                 .Include(o => o.Pizzas).ThenInclude(p => p.Toppings)
                 .ThenInclude(t => t.Topping)
@@ -59,6 +68,7 @@ namespace BlazingPizza.Server.Controllers
             // Establecer una ubicación de envío ficticia
             order.DeliveryLocation =
                 new LatLong(19.043679206924864, -98.19811254438645);
+            order.UserId = GetUserId();
             // Establecer el valor de Pizza.SpecialId y Topping.ToppingId
             // para que no se creen nuevos registros Special y Topping.
             foreach(var pizza in order.Pizzas)
