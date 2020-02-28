@@ -3,6 +3,7 @@
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @inject OrderState OrderState
+@inject IJSRuntime JSRuntime
 
 
 <div class="main">
@@ -31,7 +32,7 @@
             <h2>Tu Orden</h2>
             @foreach (var ConfiguredPizza in OrderState.Order.Pizzas)
             {
-                <ConfiguredPizzaItem Pizza="ConfiguredPizza" OnRemoved="@(() => OrderState.removeConfiguredPizza(ConfiguredPizza))" />
+                <ConfiguredPizzaItem Pizza="ConfiguredPizza" OnRemoved="@(() => RemovePizza(ConfiguredPizza))" />
             }
         </div>
     }
@@ -51,10 +52,11 @@
 
 
 
-@if (OrderState.ShowConfigureDialog)
-{
-    <ConfigurePizzaDialog Pizza="OrderState.ConfiguringPizza" OnCancel="OrderState.CancelConfigurePizzaDialog" OnConfirm="OrderState.ConfirmConfigurePizzaDialog" />
-}
+<TemplatedDialog Show="OrderState.ShowConfigureDialog">
+    <ConfigurePizzaDialog Pizza="OrderState.ConfiguringPizza"
+                          OnCancel="OrderState.CancelConfigurePizzaDialog"
+                          OnConfirm="OrderState.ConfirmConfigurePizzaDialog" />
+</TemplatedDialog>
 
 @code{
 
@@ -68,6 +70,16 @@
     {
         Specials = await HttpClient.GetJsonAsync<List<PizzaSpecial>>("specials");
     }
+
+    async Task RemovePizza(Pizza configuredPizza)
+    {
+        if(await JSRuntime.Confirm(
+            $"¿Eliminar la pizza {configuredPizza.Special.Name} de la orden?"))
+        {
+            OrderState.removeConfiguredPizza(configuredPizza);
+        }
+    }
+
     #endregion
 
 }
