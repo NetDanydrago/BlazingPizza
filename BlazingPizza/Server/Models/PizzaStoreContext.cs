@@ -13,10 +13,11 @@ namespace BlazingPizza.Server.Models
         public DbSet<Topping> Toppings { get; set; }
         public DbSet<Pizza> Pizzas { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<NotificationSubscription> NotificationSubscriptions { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=TIW1004\SQLEXPRESS;Database=PizzaStore; trusted_Connection=True;",
+            optionsBuilder.UseSqlServer(@"Server=localhost;Database=PizzaStore; trusted_Connection=True;",
             providerOptions => providerOptions.CommandTimeout(300));
         }
 
