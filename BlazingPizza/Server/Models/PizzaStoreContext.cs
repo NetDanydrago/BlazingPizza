@@ -17,8 +17,9 @@ namespace BlazingPizza.Server.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=localhost;Database=PizzaStore; trusted_Connection=True;",
-            providerOptions => providerOptions.CommandTimeout(300));
+            //optionsBuilder.UseSqlServer(@"Server=TIW1004\SQLEXPRESS;Database=PizzaStore; trusted_Connection=True;",
+            optionsBuilder.UseSqlite("Data Source=PizzaStore.db");
+            //providerOptions => providerOptions.CommandTimeout(300));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

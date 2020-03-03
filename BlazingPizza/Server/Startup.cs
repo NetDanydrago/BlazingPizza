@@ -7,6 +7,7 @@ using BlazingPizza.Server.Models;
 using System.Linq;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace BlazingPizza.Server
 {
@@ -14,6 +15,15 @@ namespace BlazingPizza.Server
     {
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+
+
+        public IConfiguration Configuration { get; }
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
@@ -32,9 +42,9 @@ namespace BlazingPizza.Server
             .AddTwitter(twitterOptions =>
             {
                 twitterOptions.ConsumerKey =
-                "U9DbAaVcDPYO3RVFlDo4w";
+                Configuration["Authentication:Twitter:ConsumerKey"];
                 twitterOptions.ConsumerSecret =
-                "l6HWZa8F5MJmbBkGSzL6gMjgZMererT5KROxAzws9o";
+                Configuration["Authentication:Twitter:ConsumerSecret"];
                 twitterOptions.Events.OnRemoteFailure = (context) =>
                 {
                     context.HandleResponse();
